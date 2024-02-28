@@ -68,4 +68,25 @@ async function addContact(name, email, phone) {
     }
 }
 
+async function updateContact(contactId, updatedFields) {
+    try {
+        const contacts = await readContactsFile();
+        const index = contacts.findIndex(contact => contact.id === contactId);
+        if (index === -1) {
+            throw new Error("Contact not found");
+        }
+
+        contacts[index] = {
+            ...contacts[index],
+            ...updatedFields
+        };
+
+        await writeContactsFile(contacts);
+        
+        return contacts[index];
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = { listContacts, getContactById, removeContact, addContact };
