@@ -1,6 +1,7 @@
 import contactsService from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
-import validateBody from "../helpers/validateBody.js"; 
+import validateBody from "../helpers/validateBody.js";
+import * as contactSchemas from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res) => {
     const contacts = await contactsService.listContacts();
@@ -27,13 +28,7 @@ export const deleteContact = async (req, res) => {
 
 export const createContact = async (req, res) => {
     const { name, email, phone } = req.body;
-    const schema = Joi.object({
-        name: Joi.string().required(),
-        email: Joi.string().email().required(),
-        phone: Joi.string().required()
-    });
-
-    validateBody(schema)(req, res, async () => {
+    validateBody(contactSchemas.createContactSchema)(req, res, async () => {
         const newContact = await contactsService.addContact(name, email, phone);
         res.status(201).json(newContact);
     });
@@ -42,12 +37,7 @@ export const createContact = async (req, res) => {
 export const updateContact = async (req, res) => {
     const { id } = req.params;
     const { name, email, phone } = req.body;
-    const schema = Joi.object({
-        name: Joi.string(),
-        email: Joi.string().email(),
-        phone: Joi.string()
-    });
-    validateBody(schema)(req, res, async () => {
+    validateBody(contactSchemas.updateContactSchema)(req, res, async () => {
         const updatedContact = await contactsService.updateContact(id, { name, email, phone });
         if (!updatedContact) {
             throw new HttpError(404, "Not found");
