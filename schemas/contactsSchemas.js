@@ -1,9 +1,18 @@
-import Joi from "joi";
+import mongoose from 'mongoose';
 
-export const createContactSchema = Joi.object({
+const contactSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: [true, 'Set name for contact'],
+    },
+    email: String,
+    phone: String,
+    favorite: {
+        type: Boolean,
+        default: false,
+    },
+});
 
-})
+const Contact = mongoose.model('Contact', contactSchema);
 
-export const updateContactSchema = Joi.object({
-
-})
+export default Contact;
