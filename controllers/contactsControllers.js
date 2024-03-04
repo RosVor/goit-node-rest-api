@@ -1,7 +1,14 @@
 import contactsService from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
+<<<<<<< Updated upstream
 import validateBody from "../helpers/validateBody.js"; 
+=======
+import validateBody from "../helpers/validateBody.js";
+import * as contactSchemas from "../schemas/contactsSchemas.js";
+import db from '../db.js';
+>>>>>>> Stashed changes
 
+db.connect();
 export const getAllContacts = async (req, res) => {
     const contacts = await contactsService.listContacts();
     res.status(200).json(contacts);

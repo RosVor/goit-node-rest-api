@@ -1,28 +1,13 @@
-const fs = require('fs').promises;
-const path = require('path');
+import db from '../db.js';
 
-const contactsPath = path.join(__dirname, 'db', 'contacts.json');
+db.connect();
 
-async function readContactsFile() {
-    try {
-        const data = await fs.readFile(contactsPath, 'utf-8');
-        return JSON.parse(data);
-    } catch (error) {
-        throw new Error("Error while reading contacts file");
-    }
-}
-
-async function writeContactsFile(contacts) {
-    try {
-        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-    } catch (error) {
-        throw new Error("Error while writing contacts file");
-    }
-}
+const mongoose = require('mongoose');
+const Contact = require('../schemas/contactsSchemas');
 
 async function listContacts() {
     try {
-        return await readContactsFile();
+        return await Contact.find();
     } catch (error) {
         throw error;
     }
@@ -30,12 +15,7 @@ async function listContacts() {
 
 async function getContactById(contactId) {
     try {
-        const contacts = await readContactsFile();
-        const contact = contacts.find(contact => contact.id === contactId);
-        if (!contact) {
-            throw new Error("Contact not found");
-        }
-        return contact;
+        return await Contact.findById(contactId);
     } catch (error) {
         throw error;
     }
@@ -43,14 +23,7 @@ async function getContactById(contactId) {
 
 async function removeContact(contactId) {
     try {
-        const contacts = await readContactsFile();
-        const index = contacts.findIndex(contact => contact.id === contactId);
-        if (index === -1) {
-            throw new Error("Contact not found");
-        }
-        const removedContact = contacts.splice(index, 1)[0];
-        await writeContactsFile(contacts);
-        return removedContact;
+        return await Contact.findByIdAndDelete(contactId);
     } catch (error) {
         throw error;
     }
@@ -58,14 +31,22 @@ async function removeContact(contactId) {
 
 async function addContact(name, email, phone) {
     try {
-        const contacts = await readContactsFile();
-        const newContact = { id: Date.now(), name, email, phone };
-        const updatedContacts = [...contacts, newContact];
-        await writeContactsFile(updatedContacts);
-        return newContact;
+        return await Contact.create({ name, email, phone });
     } catch (error) {
         throw error;
     }
 }
 
+<<<<<<< Updated upstream
 module.exports = { listContacts, getContactById, removeContact, addContact };
+=======
+async function updateContact(contactId, updatedFields) {
+    try {
+        return await Contact.findByIdAndUpdate(contactId, updatedFields, { new: true });
+    } catch (error) {
+        throw error;
+    }
+}
+
+module.exports = { listContacts, getContactById, removeContact, addContact, updateContact };
+>>>>>>> Stashed changes
