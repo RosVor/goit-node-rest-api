@@ -1,52 +1,84 @@
-import db from '../db.js';
+import Contact from "../schemas/contactsSchemas.js";
 
-db.connect();
-
-const mongoose = require('mongoose');
-const Contact = require('../schemas/contactsSchemas');
-
-async function listContacts() {
+export const getAllContacts = async (req, res) => {
     try {
-        return await Contact.find();
+        const contacts = await Contact.find();
+        res.status(200).json(contacts);
+    } catch (error) {
+        console.error('Error while getting all contacts:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getOneContact = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const contact = await Contact.findById(id);
+        if (!contact) {
+            res.status(404).json({ message: 'Contact not found' });
+            return;
+        }
+        res.status(200).json(contact);
+    } catch (error) {
+        console.error('Error while getting contact by ID:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const deleteContact = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deletedContact = await Contact.findByIdAndDelete(id);
+        if (!deletedContact) {
+            res.status(404).json({ message: 'Contact not found' });
+            return;
+        }
+        res.status(200).json(deletedContact);
+    } catch (error) {
+        console.error('Error while deleting contact:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const createContact = async (req, res) => {
+    const { name, email, phone } = req.body;
+    try {
+        const newContact = await Contact.create({ name, email, phone });
+        res.status(201).json(newContact);
+    } catch (error) {
+        console.error('Error while creating contact:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const updateContact = async (req, res) => {
+    const { id } = req.params;
+    const { name, email, phone } = req.body;
+    try {
+        const updatedContact = await Contact.findByIdAndUpdate(id, { name, email, phone }, { new: true });
+        if (!updatedContact) {
+            res.status(404).json({ message: 'Contact not found' });
+            return;
+        }
+        res.status(200).json(updatedContact);
+    } catch (error) {
+        console.error('Error while updating contact:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const updateFavoriteStatus = async (contactId, favorite) => {
+    try {
+        const existingContact = await Contact.findById(contactId);
+        if (!existingContact) {
+            return null;
+        }
+
+        existingContact.favorite = favorite;
+        await existingContact.save();
+
+        return existingContact;
     } catch (error) {
         throw error;
     }
-}
-
-async function getContactById(contactId) {
-    try {
-        return await Contact.findById(contactId);
-    } catch (error) {
-        throw error;
-    }
-}
-
-async function removeContact(contactId) {
-    try {
-        return await Contact.findByIdAndDelete(contactId);
-    } catch (error) {
-        throw error;
-    }
-}
-
-async function addContact(name, email, phone) {
-    try {
-        return await Contact.create({ name, email, phone });
-    } catch (error) {
-        throw error;
-    }
-}
-
-<<<<<<< Updated upstream
-module.exports = { listContacts, getContactById, removeContact, addContact };
-=======
-async function updateContact(contactId, updatedFields) {
-    try {
-        return await Contact.findByIdAndUpdate(contactId, updatedFields, { new: true });
-    } catch (error) {
-        throw error;
-    }
-}
-
-module.exports = { listContacts, getContactById, removeContact, addContact, updateContact };
->>>>>>> Stashed changes
+};
