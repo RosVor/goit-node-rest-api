@@ -1,7 +1,7 @@
 import * as contactsService from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
 import validateBody from "../helpers/validateBody.js";
-import * as contactSchemas from "../schemas/contactsSchemas.js";
+import * as contactSchemas from "../models/Contact.js";
 
 export const getAllContacts = async (req, res) => {
     try {
