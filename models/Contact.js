@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+import { model } from "mongoose";
+import hooks from "./hooks.js";
 
 const contactSchema = new mongoose.Schema({
     name: {
@@ -11,8 +12,14 @@ const contactSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-});
+},
+    {versionKey: false, timestamps: true}
+);
 
-const Contact = mongoose.model('Contact', contactSchema);
+contactSchema.post("save", hooks.handleSaveError);
+contactSchema.pre("findOneAndUpdate", hooks.setUpdateSettings);
+contactSchema.post("findOneAndUpdate", hooks.handleSaveError);
+
+const Contact = model("contact", contactSchema);
 
 export default Contact;
