@@ -3,7 +3,6 @@ import HttpError from "../helpers/HttpError.js";
 import { findUser } from "../services/authServices.js";
 
 const { JWT_SECRET } = process.env;
-
 const authenticate = async (req, _, next) => {
   const { authorization } = req.headers;
 
@@ -17,9 +16,7 @@ const authenticate = async (req, _, next) => {
   }
   try {
     const { id } = jwt.verify(token, JWT_SECRET);
-
     const user = await findUser({ _id: id });
-
     if (!user) {
       return next(HttpError(401, "User not found"));
     }
