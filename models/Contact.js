@@ -12,8 +12,13 @@ const contactSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-},
-    {versionKey: false, timestamps: true}
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+        required: [true, "Owner is required"],
+      },
+    },
+{ versionKey: false, timestamps: true }
 );
 
 contactSchema.post("save", hooks.handleSaveError);
