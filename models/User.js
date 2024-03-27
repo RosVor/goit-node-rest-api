@@ -1,9 +1,6 @@
-import { Schema, model } from "mongoose";
+import {Schema, model} from "mongoose";
 import hooks from "./hooks.js";
-
-const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
-const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+import {emailRegex} from "../constants/userConstants.js";
 
 const userSchema = new Schema(
   {
@@ -26,6 +23,9 @@ const userSchema = new Schema(
     token: {
       type: String,
       default: null,
+    },
+    avatarURL: {
+      type: String,
     },
   },
   { versionKey: false, timestamps: true }
